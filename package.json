@@ -1,0 +1,26 @@
+{
+  "name": "ai-platform",
+  "version": "1.0.0",
+  "description": "AI Platform designed with AI and AI-powered tools for Developers to learn and build projects.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [
+    "ai",
+    "ai-platform-built-with-ai",
+    "platform",
+    "ai-platform",
+    "ai-platform-backend",
+    "ai-platform-frontend"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "next": "^15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
