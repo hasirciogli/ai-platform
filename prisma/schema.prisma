@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id              String   @id @default(cuid())
+  fullName        String   @map("full_name")
+  email           String   @unique
+  password        String
+  emailVerifiedAt DateTime @default(now()) @map("email_verified_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+}
+
+model password_resets {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([token, email])
+}
+
+model email_verifications {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([token, email])
+}
+
+model subscriptions {
+  id             String     @id @default(cuid())
+  userId         String     @map("user_id")
+  type           String     @map("type")
+  status         String     @default("active") @map("status") // active, canceled
+  cancelReason   String?    @map("cancel_reason")
+  till           DateTime?  @map("till")
+  freeTrial      Boolean    @default(false) @map("free_trial")
+  systemMetadata Json       @default("{}") @map("system_metadata")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+  payments       payments[]
+
+  @@unique([userId, type, freeTrial])
+}
+
+model payments {
+  id             String   @id @default(cuid())
+  subscriptionId String?  @map("subscription_id")
+  amount         Int      @map("amount")
+  status         String   @default("pending") @map("status") // pending, completed, failed
+  provider       String   @default("stripe") @map("provider") // stripe, paypal, etc.
+  cardLast4      String?  @map("card_last4")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  systemMetadata Json     @default("{}") @map("system_metadata")
+
+  subscription subscriptions? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+}
+
+model configs {
+  id        String   @id @default(cuid())
+  key       String   @map("key")
+  value     String   @map("value")
+  data      Json     @default("{}") @map("data")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([key])
+}
